@@ -1,12 +1,16 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { topics } from "@/data/topics";
 
 type TopicPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+// Finish the whole page before replying, so unknown topics return a real 404.
+export const ensureStatic = "navigation";
 
 export function generateStaticParams() {
   return topics.map(({ slug }) => ({ slug }));
@@ -19,21 +23,19 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
   return topic ? { title: topic.title } : { title: "Topic not found" };
 }
 
-export default function TopicPage({ params }: TopicPageProps) {
-  return (
-    <Suspense
-      fallback={
-        <div className="py-10 text-sm text-muted sm:py-14" aria-busy="true">
-          Loading topic...
-        </div>
-      }
-    >
-      <TopicContent params={params} />
-    </Suspense>
-  );
+// Load content/<slug>.mdx, or return null if the lesson is not written yet.
+async function getLesson(slug: string) {
+  const lessonPath = join(process.cwd(), "content", `${slug}.mdx`);
+
+  if (!existsSync(lessonPath)) {
+    return null;
+  }
+
+  const lesson = await import(`@/content/${slug}.mdx`);
+  return lesson.default;
 }
 
-async function TopicContent({ params }: TopicPageProps) {
+export default async function TopicPage({ params }: TopicPageProps) {
   const { slug } = await params;
   const topicIndex = topics.findIndex((item) => item.slug === slug);
   const topic = topics[topicIndex];
@@ -42,6 +44,7 @@ async function TopicContent({ params }: TopicPageProps) {
     notFound();
   }
 
+  const Lesson = await getLesson(slug);
   const nextTopic = topics[topicIndex + 1];
 
   return (
@@ -63,12 +66,16 @@ async function TopicContent({ params }: TopicPageProps) {
         </h2>
       </section>
 
-      <div className="mt-8 border-l-2 border-forest bg-white px-5 py-5 sm:px-6">
-        <p className="text-sm font-semibold text-ink">Lesson materials are being prepared</p>
-        <p className="mt-2 text-sm leading-6 text-muted">
-          This topic page is ready for readings, examples, and practice activities.
-        </p>
-      </div>
+      {Lesson ? (
+        <Lesson />
+      ) : (
+        <div className="mt-8 border-l-2 border-forest bg-white px-5 py-5 sm:px-6">
+          <p className="text-sm font-semibold text-ink">Lesson materials are being prepared</p>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            This topic page is ready for readings, examples, and practice activities.
+          </p>
+        </div>
+      )}
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
         <Link href="/" className="text-sm font-medium text-forest hover:underline">
