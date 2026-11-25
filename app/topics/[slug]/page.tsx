@@ -3,6 +3,8 @@ import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Quiz } from "@/app/components/quiz";
+import { quizzes } from "@/data/quizzes";
 import { topics } from "@/data/topics";
 
 type TopicPageProps = {
@@ -76,6 +78,8 @@ export default async function TopicPage({ params }: TopicPageProps) {
           </p>
         </div>
       )}
+
+      <Quiz key={topic.slug} questions={quizzes[topic.slug]} />
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
         <Link href="/" className="text-sm font-medium text-forest hover:underline">
