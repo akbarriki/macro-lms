@@ -7,15 +7,20 @@ export function CourseShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex-1">
       <header className="border-b border-line bg-white">
         <div className="mx-auto flex min-h-17 max-w-360 items-center justify-between gap-6 px-5 sm:px-8">
-          <Link href="/" className="group flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest">
-            <span className="grid size-9 place-items-center border border-forest font-serif text-lg text-forest transition-colors group-hover:bg-[#e6f0eb]" aria-hidden="true">
+          <div className="flex items-center gap-3">
+            <Link href="/" aria-label="Macroeconomics Course 101 home" className="group grid size-9 shrink-0 place-items-center border border-forest font-serif text-lg text-forest transition-colors hover:bg-[#e6f0eb] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest">
               M
-            </span>
-            <span>
-              <span className="block font-serif text-base leading-tight text-ink">Macroeconomics</span>
-              <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">Course 101</span>
-            </span>
-          </Link>
+            </Link>
+            <div>
+              <Link href="/" className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest">
+                <span className="block font-serif text-base leading-tight text-ink">Macroeconomics</span>
+                <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">Course 101</span>
+              </Link>
+              <p className="mt-1 text-[10px] leading-4 text-muted">
+                by: <a href="https://github.com/akbarriki" target="_blank" rel="noreferrer" className="font-medium text-forest hover:underline">Riki Akbar</a>
+              </p>
+            </div>
+          </div>
           <p className="hidden text-xs font-medium uppercase tracking-[0.12em] text-muted sm:block">
             Principles and policy
           </p>
